@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create New Poll{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>Create New Poll</h2>
+        <form method="post">
+            {% csrf_token %}
+            
+            {{ poll_form|crispy }}
+            
+            <h3 class="mt-4">Poll Options</h3>
+            {{ option_formset.management_form }}
+            {% for form in option_formset %}
+                <div class="option-form mb-3">
+                    {{ form|crispy }}
+                </div>
+            {% endfor %}
+            
+            <button type="button" id="add-option" class="btn btn-secondary mb-3">Add Another Option</button>
+            <button type="submit" class="btn btn-primary">Create Poll</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addOptionBtn = document.getElementById('add-option');
+    const formsetContainer = document.querySelector('form');
+    
+    addOptionBtn.addEventListener('click', function() {
+        const forms = document.getElementsByClassName('option-form');
+        const formNum = forms.length;
+        const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+        
+        const newForm = forms[0].cloneNode(true);
+        const inputs = newForm.getElementsByTagName('input');
+        
+        for (let input of inputs) {
+            input.value = '';
+            input.name = input.name.replace('-0-', `-${formNum}-`);
+            input.id = input.id.replace('-0-', `-${formNum}-`);
+        }
+        
+        const labels = newForm.getElementsByTagName('label');
+        for (let label of labels) {
+            label.htmlFor = label.htmlFor.replace('-0-', `-${formNum}-`);
+        }
+        
+        formsetContainer.insertBefore(newForm, addOptionBtn);
+        totalForms.value = formNum + 1;
+    });
+});
+</script>
+{% endblock %} 

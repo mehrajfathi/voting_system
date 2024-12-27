@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ user.username }}'s Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="profile-section">
+            <h2><i class="fas fa-user-circle"></i> {{ user.username }}</h2>
+            <p class="text-muted">{{ user.email }}</p>
+            {% if user.category %}
+                <p><strong>Category:</strong> {{ user.category }}</p>
+            {% endif %}
+            <div class="stats-card">
+                <h4>Statistics</h4>
+                <p><i class="fas fa-poll"></i> Polls Created: {{ total_polls }}</p>
+                <p><i class="fas fa-vote-yea"></i> Votes Cast: {{ total_votes }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3><i class="fas fa-poll"></i> My Polls</h3>
+            </div>
+            <div class="card-body">
+                {% if user_polls %}
+                    {% for poll in user_polls %}
+                        <div class="poll-card card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ poll.title }}</h5>
+                                <p class="card-text">{{ poll.description|truncatewords:30 }}</p>
+                                <div class="text-muted mb-2">
+                                    <small>
+                                        Created: {{ poll.created_at|date:"M d, Y" }} |
+                                        Status: {% if poll.is_active %}Active{% else %}Ended{% endif %}
+                                    </small>
+                                </div>
+                                <a href="{% url 'poll_detail' poll.pk %}" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-eye"></i> View Results
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>You haven't created any polls yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-vote-yea"></i> My Votes</h3>
+            </div>
+            <div class="card-body">
+                {% if user_votes %}
+                    {% for vote in user_votes %}
+                        <div class="poll-card card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ vote.poll.title }}</h5>
+                                <p class="text-muted">
+                                    Voted for: {{ vote.option.text }} |
+                                    Date: {{ vote.timestamp|date:"M d, Y" }}
+                                </p>
+                                <a href="{% url 'poll_detail' vote.poll.pk %}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-chart-bar"></i> View Results
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>You haven't voted in any polls yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

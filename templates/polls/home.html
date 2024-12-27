@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Welcome to Online Polling System{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-4">Welcome to VoteHub!!!</h1>
+        <p class="lead">Create, vote, and analyze polls in real-time</p>
+        {% if not user.is_authenticated %}
+            <div class="cta-buttons mt-4">
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-sign-in-alt"></i> Login to Start Voting
+                </a>
+                <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-user-plus"></i> Register Now
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row features-section mb-5">
+        <div class="col-md-4">
+            <div class="feature-card text-center p-4">
+                <i class="fas fa-poll fa-3x mb-3 text-primary"></i>
+                <h3>Create Polls</h3>
+                <p>Create custom polls with multiple options and set duration</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card text-center p-4">
+                <i class="fas fa-vote-yea fa-3x mb-3 text-success"></i>
+                <h3>Vote Securely</h3>
+                <p>Cast your vote securely and see real-time results</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card text-center p-4">
+                <i class="fas fa-chart-bar fa-3x mb-3 text-info"></i>
+                <h3>View Analytics</h3>
+                <p>Get detailed insights and analytics for your polls</p>
+            </div>
+        </div>
+    </div>
+
+    {% if user.is_authenticated and latest_polls %}
+    <div class="latest-polls">
+        <h2 class="text-center mb-4">Latest Active Polls</h2>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for poll in latest_polls %}
+            <div class="col">
+                <div class="card h-100 poll-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ poll.title }}</h5>
+                        <p class="card-text">{{ poll.description|truncatewords:20 }}</p>
+                        <p class="text-muted">
+                            <small>
+                                <i class="fas fa-user"></i> {{ poll.creator.username }}<br>
+                                <i class="fas fa-clock"></i> Ends: {{ poll.end_time|date:"M d, Y" }}
+                            </small>
+                        </p>
+                        <a href="{% url 'poll_detail' poll.pk %}" class="btn btn-primary">
+                            <i class="fas fa-vote-yea"></i> Vote Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .home-container {
+        padding: 2rem 0;
+    }
+    
+    .feature-card {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        height: 100%;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .features-section {
+        margin: 4rem 0;
+    }
+    
+    .poll-card {
+        transition: transform 0.2s ease;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    .poll-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .cta-buttons {
+        margin: 2rem 0;
+    }
+    
+    .display-4 {
+        color: #2c3e50;
+        font-weight: bold;
+    }
+    
+    .lead {
+        color: #34495e;
+        font-size: 1.25rem;
+    }
+    
+    .latest-polls {
+        background-color: #f8f9fa;
+        padding: 3rem 0;
+        border-radius: 15px;
+    }
+</style>
+{% endblock %} 
